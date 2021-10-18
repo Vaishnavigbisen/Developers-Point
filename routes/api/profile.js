@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const config = require('config');
 const auth = require('../../middleware/auth');
 const { check, validationResult } = require('express-validator');
 
@@ -92,17 +93,20 @@ router.post(
           { $set: profileFields },
           { new: true }
         );
-        return res.json(profile);
+        //console.log(profileFields);
+        return res.json(profileFields);
       }
 
       //Create
       profile = new Profile(profileFields);
 
+      // console.log(profileFields);
       await profile.save();
-      res.json(profile);
+
+      return res.json(profileFields);
     } catch (err) {
       console.error(err.message);
-      res.status(500).send('Server Error');
+      return res.status(500).send('Server Error');
     }
   }
 );
