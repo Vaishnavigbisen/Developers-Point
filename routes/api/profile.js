@@ -1,16 +1,18 @@
 const express = require('express');
-const router = express.Router();
 const config = require('config');
+const router = express.Router();
 const auth = require('../../middleware/auth');
 const { check, validationResult } = require('express-validator');
 
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
 
-//@route GET api/profile/me
-//@desc Get current users profile
-//@access Private
-
+/*
+Route           api/profile/me
+Description     Get current users profile
+Access          Private
+Method          GET
+*/
 router.get('/me', auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({ user: req.user.id }).populate(
@@ -29,9 +31,12 @@ router.get('/me', auth, async (req, res) => {
   }
 });
 
-//@route POST api/profile
-//@desc Create or update user profile
-//@access Private
+/*
+Route           api/profile
+Description     Create or update user profile
+Access          Private
+Method          POST
+*/
 router.post(
   '/',
   [
@@ -62,7 +67,7 @@ router.post(
       linkedin,
     } = req.body;
 
-    //Profile object
+    // Profile object
     const profileFields = {};
     profileFields.user = req.user.id;
     if (company) profileFields.company = company;
@@ -75,7 +80,7 @@ router.post(
       profileFields.skills = skills.split(',').map((skill) => skill.trim());
     }
 
-    //Social object
+    // Social object
     profileFields.social = {};
     if (youtube) profileFields.social.youtube = youtube;
     if (twitter) profileFields.social.twitter = twitter;
@@ -84,50 +89,33 @@ router.post(
     if (instagram) profileFields.social.instagram = instagram;
 
     try {
-      let profile = Profile.findOne({ user: req.user.id });
-
-      if (profile) {
-        //Update
-        profile = await Profile.findOneAndUpdate(
-          { user: req.user.id },
-          { $set: profileFields },
-          { new: true }
-        );
-        //console.log(profileFields);
-        return res.json(profileFields);
-      }
-
-      //Create
-      profile = new Profile(profileFields);
-
-      // console.log(profileFields);
-      await profile.save();
-
-      return res.json(profileFields);
+      let profile = await Profile.findOneAndUpdate(
+        { user: req.user.id },
+        { $set: profileFields },
+        { new: true, upsert: true }
+      );
+      res.json(profile);
     } catch (err) {
       console.error(err.message);
-      return res.status(500).send('Server Error');
+      res.status(500).send('Server Error');
     }
   }
 );
 
-// @route   GET api/profile/all
-// @desc    Get all profiles
-// @access  Public
-router.get('/all', (req, res) => {
-  const errors = {};
-
-  Profile.find()
-    .populate('user', ['name', 'avatar'])
-    .then((profiles) => {
-      if (!profiles) {
-        errors.noprofile = 'There are no profiles';
-        return res.status(404).json(errors);
-      }
-
-      res.json(profiles);
-    })
-    .catch((err) => res.status(404).json({ profile: 'There are no profiles' }));
+/*
+Route           api/profile
+Description     Get all profiles
+Access          Public
+Method          GET
+*/
+router.get('/', async (req, res) => {
+  try {
+    const profiles = await Profile.find().populate('user', ['name', 'avatar']);
+    res.json(profiles);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
 });
 
 module.exports = router;
