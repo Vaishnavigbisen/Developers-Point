@@ -6,11 +6,11 @@ const ProfileSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
   },
-  handle: {
-    type: String,
-    required: true,
-    max: 40,
-  },
+  // handle: {
+  //   type: String,
+  //   required: true,
+  //   max: 40,
+  // },
   company: {
     type: String,
   },
@@ -65,7 +65,7 @@ const ProfileSchema = new mongoose.Schema({
   ],
   education: [
     {
-      school: {
+      college: {
         type: String,
         required: true,
       },
