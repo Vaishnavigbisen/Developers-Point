@@ -1,0 +1,6 @@
+{
+    "mongoURI": "mongodb+srv://vaish_2021:CNLDCvYALLohlfOq@developerspoint.i386k.mongodb.net/DevelopersPoint-Database?retryWrites=true&w=majority",
+     "jwtSecret" : "mysecrettoken",
+     "githubClientId": "9847c7c99e4ac3bf36be",
+     "githubSecret": "f130bc6e56cb566e1ba2c064f4fd410a708abc5b"
+}
