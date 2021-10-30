@@ -96,6 +96,7 @@ router.post(
         { $set: profileFields },
         { new: true, upsert: true }
       );
+
       res.json(profile);
     } catch (err) {
       console.error(err.message);
